@@ -3,7 +3,6 @@ const express = require("express");
 const Db = require("../data/db"); // << update the path
 
 
-const router = express.Router();
 
 router.get('/', (req, res) => {
     Db.find()
@@ -17,16 +16,19 @@ router.get('/', (req, res) => {
 })
 
 router.post('/', (req, res) => {
-    Db.insert(req.body)
-    .then(posts => {
-        res.status(201).json(posts)
-    })
-    .catch(err => {
-        console.log(err)
-        res.status(500).json({
-            message: 'error adding post'
+    // if(req.body.titled&&req.body.contents){
+        Db.insert(req.body)
+        .then(posts => {
+            res.status(201).json(posts)
         })
-    })
+        .catch(err => {
+            console.log(err)
+            res.status(400).json({
+                error: 'Please provide title and contents for the post.'
+            })
+        })
+    // }
+    
 })
 
 router.get('/:id', (req, res) => {
@@ -47,7 +49,7 @@ router.get('/:id', (req, res) => {
 router.get('/:id/comments', (req, res) => {
     Db.findPostComments(req.params.id)
     .then(comments =>{
-        res.status(200).json(comments)
+        res.status(201).json(comments)
     })
     .catch(err => {
         console.log(err)
@@ -59,11 +61,7 @@ router.get('/:id/comments', (req, res) => {
 router.post('/:id/comments', (req, res) => {
     Db.insertComment(req.body)
     .then(post => {
-        if (count > 0) {
-            res.status(200).json({ message: "The hub has been nuked" });
-        } else {
-            res.status(404).json({ message: "The hub could not be found" });
-        }
+        res.status(201).json(post)
     })
 })
 
